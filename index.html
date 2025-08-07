@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>炸弹躲避大冒险</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF5722;
+            --secondary: #4CAF50;
+            --accent: #FFC107;
+            --dark: #212121;
+            --light: #F5F5F5;
+            --danger: #F44336;
+            --success: #8BC34A;
+            --info: #2196F3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* 登录/注册界面 */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .auth-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .remember-me input {
+            margin-right: 0.5rem;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--secondary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .auth-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+        
+        .switch-auth {
+            text-align: center;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            color: var(--accent);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .switch-auth:hover {
+            color: #FFD700;
+            text-decoration: underline;
+        }
+        
+        /* 主界面 */
+        .main-container {
+            display: none;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            transition: all 0.3s;
+        }
+        
+        .avatar:hover {
+            transform: rotate(15deg);
+        }
+        
+        .user-details h3 {
+            margin-bottom: 0.2rem;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .user-details p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .vip-badge {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .stat:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        /* 游戏菜单 */
+        .game-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .menu-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+        
+        .menu-btn i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        /* 游戏区域 */
+        .game-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            max-height: 600px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%234CAF50"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><path d="M30,65 Q50,80 70,65" stroke="white" stroke-width="3" fill="none"/></svg>') no-repeat center center;
+            background-size: contain;
+            z-index: 10;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+        }
+        
+        .player:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 爆炸效果 */
+        .explosion {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255,100,100,0.8) 0%, rgba(255,50,50,0.6) 50%, rgba(255,0,0,0) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode 0.5s forwards;
+            z-index: 15;
+        }
+        
+        @keyframes explode {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* 收集效果 */
+        .collect-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: collect 0.5s forwards;
+            z-index: 15;
+        }
+        
+        @keyframes collect {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* 控制按钮 - 移动端 */
+        .controls {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.95);
+        }
+        
+        .up-btn {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        
+        .left-btn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        .right-btn {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        .down-btn {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        
+        /* 商店和设置 */
+        .shop-container, .settings-container, .leaderboard-container {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+        
+        .tab {
+            padding: 0.7rem 1.5rem;
+            background: transparent;
+            margin-right: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .shop-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .shop-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .shop-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 0.8rem;
+            border: 2px solid var(--accent);
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+        
+        .shop-item h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .shop-item .price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+        
+        .shop-item .price i {
+            margin-right: 0.3rem;
+        }
+        
+        .shop-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .shop-item.disabled:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .shop-item.owned {
+            border: 2px solid var(--success);
+        }
+        
+        .shop-item.equipped {
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        /* VIP选项 */
+        .vip-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .vip-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .vip-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .vip-option h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .vip-option .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .vip-option .benefits {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .vip-option .benefits li {
+            margin-bottom: 0.5rem;
+            list-style-type: none;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .vip-option .benefits li:before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+        
+        .buy-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .buy-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .buy-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 设置 */
+        .setting-option {
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .setting-option label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .setting-option input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        .setting-option input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .setting-option input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.8rem;
+        }
+        
+        .setting-option button {
+            padding: 0.6rem 1.2rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .setting-option button:hover {
+            background: #45a049;
+        }
+        
+        /* 排行榜 */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .leaderboard-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .leaderboard-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .leaderboard-table .rank {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .leaderboard-table .me {
+            background: rgba(76, 175, 80, 0.2);
+            font-weight: bold;
+        }
+        
+        /* 游戏结束和高分界面 */
+        .game-over-container, .high-score-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .game-over-content, .high-score-content {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-over-content h2, .high-score-content h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        .game-over-content p, .high-score-content p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 0.5rem 0;
+        }
+        
+        .restart-btn {
+            padding: 1rem 2.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .restart-btn:hover {
+            background: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .restart-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 管理员面板 */
+        .admin-panel {
+            display: none;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+        
+        .admin-panel h2 {
+            color: var(--danger);
+            margin-bottom: 1.5rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+        }
+        
+        .admin-search {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-search input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .admin-search button {
+            padding: 0.8rem 1.5rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .user-details-admin {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-details-admin h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .user-details-admin p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .admin-btn {
+            padding: 0.8rem;
+            background: var(--danger);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .admin-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .admin-btn:active {
+            transform: translateY(0);
+        }
+        
+        .admin-stats {
+            margin-top: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .admin-stats h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        /* 开发者模式 */
+        .dev-mode {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+        
+        #dev-mode-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            display: none; /* 隐藏开发者按钮 */
+        }
+        
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 8px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .notification.warning {
+            border-left: 4px solid var(--accent);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-stats {
+                width: 100%;
+                margin-top: 1rem;
+                justify-content: space-between;
+            }
+            
+            .controls {
+                display: grid;
+            }
+            
+            .game-menu {
+                grid-template-columns: 1fr;
+            }
+            
+            .shop-items {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .vip-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 登录/注册界面 -->
+    <div class="auth-container" id="auth-container">
+        <div class="auth-form" id="login-form">
+            <h2>登录</h2>
+            <div class="form-group">
+                <label for="login-username">用户名</label>
+                <input type="text" id="login-username" placeholder="输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" placeholder="输入密码">
+            </div>
+            <div class="remember-me">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">30天内自动登录</label>
+            </div>
+            <button class="auth-btn" id="login-btn">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+            <p class="switch-auth" id="switch-to-register">
+                <i class="fas fa-user-plus"></i> 没有账号？立即注册
+            </p>
+        </div>
+        
+        <div class="auth-form" id="register-form" style="display: none;">
+            <h2>注册</h2>
+            <div class="form-group">
+                <label for="register-username">用户名</label>
+                <input type="text" id="register-username" placeholder="输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="register-password">密码</label>
+                <input type="password" id="register-password" placeholder="输入密码">
+            </div>
+            <div class="form-group">
+                <label for="register-confirm-password">确认密码</label>
+                <input type="password" id="register-confirm-password" placeholder="再次输入密码">
+            </div>
+            <button class="auth-btn" id="register-btn">
+                <i class="fas fa-user-plus"></i> 注册
+            </button>
+            <p class="switch-auth" id="switch-to-login">
+                <i class="fas fa-sign-in-alt"></i> 已有账号？立即登录
+            </p>
+        </div>
+    </div>
+    
+    <!-- 主界面 -->
+    <div class="main-container" id="main-container">
+        <div class="header">
+            <div class="user-info">
+                <img src="https://via.placeholder.com/50" alt="头像" class="avatar" id="user-avatar">
+                <div class="user-details">
+                    <h3 id="username-display">用户名</h3>
+                    <p id="user-vip-status">普通用户</p>
+                </div>
+            </div>
+            <div class="user-stats">
+                <div class="stat tooltip">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-value" id="coins-display">0</span>
+                    <span class="tooltiptext">金币</span>
+                </div>
+                <div class="stat tooltip">
+                    <span class="stat-icon">🔑</span>
+                    <span class="stat-value" id="keys-display">0</span>
+                    <span class="tooltiptext">钥匙</span>
+                </div>
+                <div class="stat tooltip">
+                    <span class="stat-icon">❤️</span>
+                    <span class="stat-value" id="lives-display">1</span>
+                    <span class="tooltiptext">生命</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-menu">
+            <button class="menu-btn" id="play-btn">
+                <i class="fas fa-gamepad"></i> 开始游戏
+            </button>
+            <button class="menu-btn" id="shop-btn">
+                <i class="fas fa-shopping-cart"></i> 商店
+            </button>
+            <button class="menu-btn" id="settings-btn">
+                <i class="fas fa-cog"></i> 设置
+            </button>
+            <button class="menu-btn" id="leaderboard-btn">
+                <i class="fas fa-trophy"></i> 排行榜
+            </button>
+            <button class="menu-btn" id="switch-account-btn">
+                <i class="fas fa-exchange-alt"></i> 切换账号
+            </button>
+            <button class="menu-btn" id="contact-btn">
+                <i class="fas fa-envelope"></i> 联系开发者
+            </button>
+            <button class="menu-btn" id="qq-group-btn">
+                <i class="fab fa-qq"></i> 加入QQ群
+            </button>
+        </div>
+        
+        <!-- 游戏区域 -->
+        <div class="game-container" id="game-container">
+            <canvas id="game-canvas"></canvas>
+            <div class="player" id="player"></div>
+        </div>
+        
+        <!-- 移动端控制按钮 -->
+        <div class="controls" id="controls">
+            <button class="control-btn up-btn" id="up-btn">↑</button>
+            <button class="control-btn left-btn" id="left-btn">←</button>
+            <button class="control-btn right-btn" id="right-btn">→</button>
+            <button class="control-btn down-btn" id="down-btn">↓</button>
+        </div>
+        
+        <!-- 商店 -->
+        <div class="shop-container" id="shop-container">
+            <h2><i class="fas fa-shopping-cart"></i> 商店</h2>
+            <div class="tab-container">
+                <div class="tab active" data-tab="skins">皮肤</div>
+                <div class="tab" data-tab="avatars">头像</div>
+                <div class="tab" data-tab="vip">VIP</div>
+            </div>
+            
+            <div class="shop-content" id="skins-tab">
+                <div class="shop-items" id="skins-items">
+                    <!-- 皮肤项将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="shop-content" id="avatars-tab" style="display: none;">
+                <div class="shop-items" id="avatars-items">
+                    <!-- 头像项将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="shop-content" id="vip-tab" style="display: none;">
+                <div class="vip-options">
+                    <div class="vip-option">
+                        <h3>VIP月卡</h3>
+                        <div class="price">200 <i class="fas fa-coins"></i></div>
+                        <ul class="benefits">
+                            <li>专属VIP标志</li>
+                            <li>每日领取50金币</li>
+                            <li>解锁所有普通皮肤</li>
+                            <li>游戏内特殊效果</li>
+                        </ul>
+                        <button class="buy-btn" data-item="vip-month">购买</button>
+                    </div>
+                    <div class="vip-option">
+                        <h3>VIP年卡</h3>
+                        <div class="price">1000 <i class="fas fa-coins"></i></div>
+                        <ul class="benefits">
+                            <li>包含月卡所有特权</li>
+                            <li>专属VIP头像框</li>
+                            <li>每日领取100金币</li>
+                            <li>解锁所有稀有皮肤</li>
+                            <li>游戏内特殊特效</li>
+                        </ul>
+                        <button class="buy-btn" data-item="vip-year">购买</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置 -->
+        <div class="settings-container" id="settings-container">
+            <h2><i class="fas fa-cog"></i> 设置</h2>
+            <div class="setting-option">
+                <label for="volume-control"><i class="fas fa-volume-up"></i> 音量</label>
+                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            <div class="setting-option">
+                <label for="nickname-change"><i class="fas fa-user-edit"></i> 更改昵称</label>
+                <input type="text" id="nickname-change" placeholder="输入新昵称">
+                <button id="update-nickname"><i class="fas fa-check"></i> 更新</button>
+            </div>
+            <div class="setting-option">
+                <label for="avatar-upload"><i class="fas fa-camera"></i> 上传头像</label>
+                <input type="file" id="avatar-upload" accept="image/*">
+                <button id="upload-avatar"><i class="fas fa-upload"></i> 上传</button>
+                <p><i class="fas fa-info-circle"></i> 自定义头像需要50金币解锁</p>
+            </div>
+            <div class="setting-option">
+                <label><i class="fas fa-keyboard"></i> 控制方式</label>
+                <div class="control-options">
+                    <input type="radio" id="control-keyboard" name="control" value="keyboard" checked>
+                    <label for="control-keyboard">键盘</label>
+                    <input type="radio" id="control-touch" name="control" value="touch">
+                    <label for="control-touch">触摸屏</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 排行榜 -->
+        <div class="leaderboard-container" id="leaderboard-container">
+            <h2><i class="fas fa-trophy"></i> 排行榜</h2>
+            <div class="tab-container">
+                <div class="tab active" data-board="global">全球榜</div>
+                <div class="tab" data-board="friends">好友榜</div>
+                <div class="tab" data-board="daily">日榜</div>
+                <div class="tab" data-board="live">实时对战</div>
+            </div>
+            
+            <div class="leaderboard-content" id="global-board">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>分数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="global-leaderboard">
+                        <!-- 排行榜数据将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="leaderboard-content" id="friends-board" style="display: none;">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>分数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="friends-leaderboard">
+                        <!-- 排行榜数据将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="leaderboard-content" id="daily-board" style="display: none;">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>分数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-leaderboard">
+                        <!-- 排行榜数据将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="leaderboard-content" id="live-board" style="display: none;">
+                <div id="live-match-container">
+                    <p>正在寻找对手...</p>
+                    <button id="start-live-match" class="auth-btn">开始实时对战</button>
+                    <div id="live-match-info" style="display: none;">
+                        <h3>对战信息</h3>
+                        <p>对手: <span id="opponent-name"></span></p>
+                        <p>分数: <span id="live-score">0</span></p>
+                        <p>时间: <span id="live-time">0</span>秒</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 管理员面板 -->
+        <div class="admin-panel" id="admin-panel">
+            <h2><i class="fas fa-user-shield"></i> 管理员面板</h2>
+            <div class="admin-search">
+                <input type="text" id="admin-search-user" placeholder="输入用户名搜索...">
+                <button id="admin-search-btn"><i class="fas fa-search"></i> 搜索</button>
+            </div>
+            
+            <div class="user-details-admin" id="user-details-admin" style="display: none;">
+                <h3 id="admin-username">用户名</h3>
+                <p><i class="fas fa-id-card"></i> ID: <span id="admin-user-id"></span></p>
+                <p><i class="fas fa-calendar-plus"></i> 注册日期: <span id="admin-reg-date"></span></p>
+                <p><i class="fas fa-clock"></i> 最后登录: <span id="admin-last-login"></span></p>
+                <p><i class="fas fa-star"></i> 最高分: <span id="admin-high-score"></span></p>
+                <p><i class="fas fa-coins"></i> 金币: <span id="admin-user-coins"></span></p>
+                <p><i class="fas fa-key"></i> 钥匙: <span id="admin-user-keys"></span></p>
+                <p><i class="fas fa-crown"></i> VIP状态: <span id="admin-vip-status"></span></p>
+                
+                <div class="admin-actions">
+                    <button class="admin-btn" id="make-admin-btn"><i class="fas fa-user-shield"></i> 设为管理员</button>
+                    <button class="admin-btn" id="ban-user-btn"><i class="fas fa-ban"></i> 封禁用户</button>
+                    <button class="admin-btn" id="add-coins-btn"><i class="fas fa-coins"></i> 添加金币</button>
+                    <button class="admin-btn" id="add-keys-btn"><i class="fas fa-key"></i> 添加钥匙</button>
+                    <button class="admin-btn" id="grant-vip-btn"><i class="fas fa-crown"></i> 授予VIP</button>
+                    <button class="admin-btn" id="reset-password-btn"><i class="fas fa-key"></i> 重置密码</button>
+                </div>
+            </div>
+            
+            <div class="admin-stats">
+                <h3><i class="fas fa-chart-line"></i> 系统统计</h3>
+                <p><i class="fas fa-users"></i> 总用户数: <span id="total-users">0</span></p>
+                <p><i class="fas fa-user-clock"></i> 在线用户: <span id="online-users">0</span></p>
+                <p><i class="fas fa-calendar-day"></i> 今日活跃: <span id="daily-active">0</span></p>
+                <p><i class="fas fa-gamepad"></i> 今日游戏次数: <span id="daily-games">0</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏结束界面 -->
+    <div class="game-over-container" id="game-over-container">
+        <div class="game-over-content floating">
+            <h2>游戏结束!</h2>
+            <p>你的分数:</p>
+            <div class="score-value" id="final-score">0</div>
+            <p>最高分: <span id="personal-best">0</span></p>
+            <button class="restart-btn" id="restart-btn">
+                <i class="fas fa-redo"></i> 再来一局
+            </button>
+        </div>
+    </div>
+    
+    <!-- 高分界面 -->
+    <div class="high-score-container" id="high-score-container">
+        <div class="high-score-content floating">
+            <h2>恭喜!</h2>
+            <p>你创造了新的最高分:</p>
+            <div class="score-value" id="new-high-score">0</div>
+            <p>全球排名: <span id="global-rank">0</span></p>
+            <button class="restart-btn" id="high-score-restart-btn">
+                <i class="fas fa-redo"></i> 继续游戏
+            </button>
+        </div>
+    </div>
+    
+    <!-- 通知 -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">操作成功</span>
+    </div>
+
+    <script>
+        // 游戏主逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 游戏状态
+            const gameState = {
+                isPlaying: false,
+                score: 0,
+                lives: 1,
+                coins: 0,
+                keys: 0,
+                speed: 1,
+                level: 1,
+                isAdmin: false,
+                isDev: false,
+                playerSkin: 'default',
+                playerAvatar: 'default',
+                isVip: false,
+                highScore: 0,
+                volume: 0.5,
+                controlType: 'keyboard',
+                gameTime: 0,
+                gameInterval: null,
+                bombInterval: null,
+                powerupInterval: null,
+                bombs: [],
+                powerups: [],
+                lastFrameTime: 0,
+                playerX: 0,
+                playerY: 0,
+                playerWidth: 40,
+                playerHeight: 40,
+                gameWidth: 0,
+                gameHeight: 0,
+                keysPressed: {},
+                touchStartX: 0,
+                touchStartY: 0
+            };
+            
+            // 用户数据
+            let currentUser = null;
+            let users = JSON.parse(localStorage.getItem('bomb_dodge_users')) || [];
+            let onlineUsers = [];
+            let skins = [
+                { id: 'default', name: '默认皮肤', price: 0, owned: true, equipped: true, 
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%234CAF50"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><path d="M30,65 Q50,80 70,65" stroke="white" stroke-width="3" fill="none"/></svg>' },
+                { id: 'ninja', name: '忍者', price: 100, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23212121"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><path d="M30,65 Q50,80 70,65" stroke="white" stroke-width="3" fill="none"/><path d="M50,20 L50,30" stroke="white" stroke-width="3"/></svg>' },
+                { id: 'robot', name: '机器人', price: 150, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" rx="10" fill="%23FF5722"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><rect x="40" y="60" width="20" height="10" fill="white"/></svg>' },
+                { id: 'alien', name: '外星人', price: 200, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%238BC34A"/><ellipse cx="35" cy="40" rx="8" ry="5" fill="white"/><ellipse cx="65" cy="40" rx="8" ry="5" fill="white"/><path d="M30,65 Q50,85 70,65" stroke="white" stroke-width="3" fill="none"/></svg>' },
+                { id: 'vip', name: 'VIP专属', price: 500, owned: false, equipped: false, vipOnly: true,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23FFC107"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><path d="M30,65 Q50,80 70,65" stroke="white" stroke-width="3" fill="none"/><path d="M20,20 L30,30 M80,20 L70,30 M20,80 L30,70 M80,80 L70,70" stroke="white" stroke-width="2"/></svg>' }
+            ];
+            
+            let avatars = [
+                { id: 'default', name: '默认头像', price: 0, owned: true, equipped: true, 
+                  image: 'https://via.placeholder.com/50' },
+                { id: 'cat', name: '猫咪', price: 50, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23FF9800"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><circle cx="35" cy="40" r="2" fill="black"/><circle cx="65" cy="40" r="2" fill="black"/><path d="M40,60 Q50,70 60,60" stroke="black" stroke-width="2" fill="none"/><path d="M30,25 L40,20 M70,25 L60,20" stroke="black" stroke-width="2" fill="none"/></svg>' },
+                { id: 'dog', name: '狗狗', price: 50, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23795548"/><circle cx="35" cy="40" r="5" fill="white"/><circle cx="65" cy="40" r="5" fill="white"/><circle cx="35" cy="40" r="2" fill="black"/><circle cx="65" cy="40" r="2" fill="black"/><path d="M40,60 Q50,65 60,60" stroke="black" stroke-width="2" fill="none"/><path d="M45,55 L50,60 L55,55" stroke="black" stroke-width="2" fill="none"/></svg>' },
+                { id: 'panda', name: '熊猫', price: 100, owned: false, equipped: false,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="white"/><circle cx="35" cy="40" r="8" fill="black"/><circle cx="65" cy="40" r="8" fill="black"/><circle cx="35" cy="40" r="3" fill="white"/><circle cx="65" cy="40" r="3" fill="white"/><path d="M30,60 Q50,70 70,60" stroke="black" stroke-width="2" fill="none"/><circle cx="50" cy="30" r="5" fill="black"/></svg>' },
+                { id: 'vip', name: 'VIP专属', price: 200, owned: false, equipped: false, vipOnly: true,
+                  image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23FFC107"/><circle cx="50" cy="50" r="35" fill="%23FF5722"/><text x="50" y="55" font-family="Arial" font-size="30" fill="white" text-anchor="middle" font-weight="bold">VIP</text></svg>' }
+            ];
+            
+            // DOM元素
+            const elements = {
+                authContainer: document.getElementById('auth-container'),
+                loginForm: document.getElementById('login-form'),
+                registerForm: document.getElementById('register-form'),
+                mainContainer: document.getElementById('main-container'),
+                gameContainer: document.getElementById('game-container'),
+                gameCanvas: document.getElementById('game-canvas'),
+                player: document.getElementById('player'),
+                controls: document.getElementById('controls'),
+                usernameDisplay: document.getElementById('username-display'),
+                userAvatar: document.getElementById('user-avatar'),
+                vipStatus: document.getElementById('user-vip-status'),
+                coinsDisplay: document.getElementById('coins-display'),
+                keysDisplay: document.getElementById('keys-display'),
+                livesDisplay: document.getElementById('lives-display'),
+                playBtn: document.getElementById('play-btn'),
+                shopBtn: document.getElementById('shop-btn'),
+                settingsBtn: document.getElementById('settings-btn'),
+                leaderboardBtn: document.getElementById('leaderboard-btn'),
+                switchAccountBtn: document.getElementById('switch-account-btn'),
+                contactBtn: document.getElementById('contact-btn'),
+                qqGroupBtn: document.getElementById('qq-group-btn'),
+                shopContainer: document.getElementById('shop-container'),
+                settingsContainer: document.getElementById('settings-container'),
+                leaderboardContainer: document.getElementById('leaderboard-container'),
+                adminPanel: document.getElementById('admin-panel'),
+                gameOverContainer: document.getElementById('game-over-container'),
+                highScoreContainer: document.getElementById('high-score-container'),
+                finalScore: document.getElementById('final-score'),
+                personalBest: document.getElementById('personal-best'),
+                newHighScore: document.getElementById('new-high-score'),
+                globalRank: document.getElementById('global-rank'),
+                restartBtn: document.getElementById('restart-btn'),
+                highScoreRestartBtn: document.getElementById('high-score-restart-btn'),
+                notification: document.getElementById('notification'),
+                notificationMessage: document.getElementById('notification-message'),
+                volumeControl: document.getElementById('volume-control'),
+                nicknameChange: document.getElementById('nickname-change'),
+                updateNickname: document.getElementById('update-nickname'),
+                avatarUpload: document.getElementById('avatar-upload'),
+                uploadAvatar: document.getElementById('upload-avatar'),
+                skinsItems: document.getElementById('skins-items'),
+                avatarsItems: document.getElementById('avatars-items'),
+                globalLeaderboard: document.getElementById('global-leaderboard'),
+                friendsLeaderboard: document.getElementById('friends-leaderboard'),
+                dailyLeaderboard: document.getElementById('daily-leaderboard'),
+                adminSearchUser: document.getElementById('admin-search-user'),
+                adminSearchBtn: document.getElementById('admin-search-btn'),
+                userDetailsAdmin: document.getElementById('user-details-admin'),
+                makeAdminBtn: document.getElementById('make-admin-btn'),
+                banUserBtn: document.getElementById('ban-user-btn'),
+                addCoinsBtn: document.getElementById('add-coins-btn'),
+                addKeysBtn: document.getElementById('add-keys-btn'),
+                grantVipBtn: document.getElementById('grant-vip-btn'),
+                totalUsers: document.getElementById('total-users'),
+                onlineUsers: document.getElementById('online-users'),
+                dailyActive: document.getElementById('daily-active'),
+                loginUsername: document.getElementById('login-username'),
+                loginPassword: document.getElementById('login-password'),
+                rememberMe: document.getElementById('remember-me'),
+                loginBtn: document.getElementById('login-btn'),
+                switchToRegister: document.getElementById('switch-to-register'),
+                registerUsername: document.getElementById('register-username'),
+                registerPassword: document.getElementById('register-password'),
+                registerConfirmPassword: document.getElementById('register-confirm-password'),
+                registerBtn: document.getElementById('register-btn'),
+                switchToLogin: document.getElementById('switch-to-login'),
+                upBtn: document.getElementById('up-btn'),
+                leftBtn: document.getElementById('left-btn'),
+                rightBtn: document.getElementById('right-btn'),
+                downBtn: document.getElementById('down-btn'),
+                controlKeyboard: document.getElementById('control-keyboard'),
+                controlTouch: document.getElementById('control-touch'),
+                startLiveMatch: document.getElementById('start-live-match'),
+                liveMatchInfo: document.getElementById('live-match-info'),
+                opponentName: document.getElementById('opponent-name'),
+                liveScore: document.getElementById('live-score'),
+                liveTime: document.getElementById('live-time')
+            };
+            
+            // 初始化游戏
+            function initGame() {
+                // 设置画布大小
+                const canvas = elements.gameCanvas;
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                gameState.gameWidth = canvas.width;
+                gameState.gameHeight = canvas.height;
+                
+                // 初始化玩家位置
+                gameState.playerX = canvas.width / 2 - gameState.playerWidth / 2;
+                gameState.playerY = canvas.height - gameState.playerHeight - 20;
+                elements.player.style.left = `${gameState.playerX}px`;
+                elements.player.style.top = `${gameState.playerY}px`;
+                
+                // 重置游戏状态
+                gameState.score = 0;
+                gameState.lives = currentUser ? currentUser.lives || 1 : 1;
+                gameState.speed = 1;
+                gameState.level = 1;
+                gameState.gameTime = 0;
+                gameState.bombs = [];
+                gameState.powerups = [];
+                gameState.keysPressed = {};
+                
+                // 更新UI
+                updateUI();
+                
+                // 开始游戏循环
+                gameState.isPlaying = true;
+                gameState.lastFrameTime = performance.now();
+                gameState.gameInterval = setInterval(updateGame, 16); // ~60fps
+                gameState.bombInterval = setInterval(createBomb, 1000);
+                gameState.powerupInterval = setInterval(createPowerup, 3000);
+                
+                // 根据控制类型显示/隐藏控制按钮
+                if (gameState.controlType === 'touch') {
+                    elements.controls.style.display = 'grid';
+                } else {
+                    elements.controls.style.display = 'none';
+                }
+            }
+            
+            // 更新游戏状态
+            function updateGame() {
+                const now = performance.now();
+                const deltaTime = (now - gameState.lastFrameTime) / 1000; // 转换为秒
+                gameState.lastFrameTime = now;
+                
+                // 更新游戏时间
+                gameState.gameTime += deltaTime;
+                
+                // 增加难度
+                gameState.level = Math.floor(gameState.gameTime / 10) + 1;
+                gameState.speed = 1 + gameState.level * 0.2;
+                
+                // 移动玩家
+                movePlayer(deltaTime);
+                
+                // 移动炸弹和道具
+                moveBombs(deltaTime);
+                movePowerups(deltaTime);
+                
+                // 检测碰撞
+                checkCollisions();
+                
+                // 渲染游戏
+                renderGame();
+            }
+            
+            // 移动玩家
+            function movePlayer(deltaTime) {
+                const speed = 200 * gameState.speed * deltaTime;
+                
+                if (gameState.controlType === 'keyboard') {
+                    if (gameState.keysPressed['ArrowUp'] || gameState.keysPressed['w']) {
+                        gameState.playerY = Math.max(0, gameState.playerY - speed);
+                    }
+                    if (gameState.keysPressed['ArrowDown'] || gameState.keysPressed['s']) {
+                        gameState.playerY = Math.min(gameState.gameHeight - gameState.playerHeight, gameState.playerY + speed);
+                    }
+                    if (gameState.keysPressed['ArrowLeft'] || gameState.keysPressed['a']) {
+                        gameState.playerX = Math.max(0, gameState.playerX - speed);
+                    }
+                    if (gameState.keysPressed['ArrowRight'] || gameState.keysPressed['d']) {
+                        gameState.playerX = Math.min(gameState.gameWidth - gameState.playerWidth, gameState.playerX + speed);
+                    }
+                }
+                
+                // 更新玩家位置
+                elements.player.style.left = `${gameState.playerX}px`;
+                elements.player.style.top = `${gameState.playerY}px`;
+            }
+            
+            // 创建炸弹
+            function createBomb() {
+                const bomb = {
+                    x: Math.random() * (gameState.gameWidth - 30),
+                    y: -30,
+                    width: 30,
+                    height: 30,
+                    speed: 100 + Math.random() * 50 * gameState.speed
+                };
+                
+                gameState.bombs.push(bomb);
+            }
+            
+            // 移动炸弹
+            function moveBombs(deltaTime) {
+                for (let i = gameState.bombs.length - 1; i >= 0; i--) {
+                    const bomb = gameState.bombs[i];
+                    bomb.y += bomb.speed * deltaTime;
+                    
+                    // 移除超出屏幕的炸弹
+                    if (bomb.y > gameState.gameHeight) {
+                        gameState.bombs.splice(i, 1);
+                        gameState.score += 1;
+                        updateUI();
+                    }
+                }
+            }
+            
+            // 创建道具
+            function createPowerup() {
+                const types = ['coin', 'life', 'key', 'speedUp', 'speedDown'];
+                const weights = [0.5, 0.2, 0.1, 0.1, 0.1]; // 不同道具的出现权重
+                
+                let random = Math.random();
+                let typeIndex = 0;
+                let cumulativeWeight = 0;
+                
+                for (let i = 0; i < weights.length; i++) {
+                    cumulativeWeight += weights[i];
+                    if (random <= cumulativeWeight) {
+                        typeIndex = i;
+                        break;
+                    }
+                }
+                
+                const powerup = {
+                    x: Math.random() * (gameState.gameWidth - 25),
+                    y: -25,
+                    width: 25,
+                    height: 25,
+                    speed: 80 + Math.random() * 40 * gameState.speed,
+                    type: types[typeIndex]
+                };
+                
+                gameState.powerups.push(powerup);
+            }
+            
+            // 移动道具
+            function movePowerups(deltaTime) {
+                for (let i = gameState.powerups.length - 1; i >= 0; i--) {
+                    const powerup = gameState.powerups[i];
+                    powerup.y += powerup.speed * deltaTime;
+                    
+                    // 移除超出屏幕的道具
+                    if (powerup.y > gameState.gameHeight) {
+                        gameState.powerups.splice(i, 1);
+                    }
+                }
+            }
+            
+            // 检测碰撞
+            function checkCollisions() {
+                // 玩家矩形
+                const playerRect = {
+                    x: gameState.playerX,
+                    y: gameState.playerY,
+                    width: gameState.playerWidth,
+                    height: gameState.playerHeight
+                };
+                
+                // 检测炸弹碰撞
+                for (let i = gameState.bombs.length - 1; i >= 0; i--) {
+                    const bomb = gameState.bombs[i];
+                    const bombRect = {
+                        x: bomb.x,
+                        y: bomb.y,
+                        width: bomb.width,
+                        height: bomb.height
+                    };
+                    
+                    if (checkRectCollision(playerRect, bombRect)) {
+                        // 碰撞发生
+                        gameState.bombs.splice(i, 1);
+                        createExplosion(bomb.x, bomb.y);
+                        handleBombCollision();
+                        break; // 一次只处理一个碰撞
+                    }
+                }
+                
+                // 检测道具碰撞
+                for (let i = gameState.powerups.length - 1; i >= 0; i--) {
+                    const powerup = gameState.powerups[i];
+                    const powerupRect = {
+                        x: powerup.x,
+                        y: powerup.y,
+                        width: powerup.width,
+                        height: powerup.height
+                    };
+                    
+                    if (checkRectCollision(playerRect, powerupRect)) {
+                        // 碰撞发生
+                        gameState.powerups.splice(i, 1);
+                        createCollectEffect(powerup.x, powerup.y);
+                        handlePowerupCollision(powerup.type);
+                    }
+                }
+            }
+            
+            // 创建爆炸效果
+            function createExplosion(x, y) {
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = `${x - 10}px`;
+                explosion.style.top = `${y - 10}px`;
+                elements.gameContainer.appendChild(explosion);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    explosion.remove();
+                }, 500);
+            }
+            
+            // 创建收集效果
+            function createCollectEffect(x, y) {
+                const effect = document.createElement('div');
+                effect.className = 'collect-effect';
+                effect.style.left = `${x - 7.5}px`;
+                effect.style.top = `${y - 7.5}px`;
+                elements.gameContainer.appendChild(effect);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    effect.remove();
+                }, 500);
+            }
+            
+            // 矩形碰撞检测
+            function checkRectCollision(rect1, rect2) {
+                return rect1.x < rect2.x + rect2.width &&
+                       rect1.x + rect1.width > rect2.x &&
+                       rect1.y < rect2.y + rect2.height &&
+                       rect1.y + rect1.height > rect2.y;
+            }
+            
+            // 处理炸弹碰撞
+            function handleBombCollision() {
+                if (gameState.lives > 0) {
+                    gameState.lives--;
+                    updateUI();
+                    showNotification('你被炸弹击中了!', 'error');
+                    
+                    if (gameState.lives <= 0) {
+                        endGame();
+                    }
+                } else {
+                    endGame();
+                }
+            }
+            
+            // 处理道具碰撞
+            function handlePowerupCollision(type) {
+                switch (type) {
+                    case 'coin':
+                        gameState.coins += 5;
+                        gameState.score += 5;
+                        showNotification('+5 金币!', 'success');
+                        break;
+                    case 'life':
+                        gameState.lives++;
+                        showNotification('+1 生命!', 'success');
+                        break;
+                    case 'key':
+                        gameState.keys++;
+                        showNotification('+1 钥匙!', 'success');
+                        break;
+                    case 'speedUp':
+                        gameState.speed *= 1.2;
+                        showNotification('速度提升!', 'warning');
+                        setTimeout(() => {
+                            gameState.speed /= 1.2;
+                        }, 3000);
+                        break;
+                    case 'speedDown':
+                        gameState.speed *= 0.8;
+                        showNotification('速度降低!', 'warning');
+                        setTimeout(() => {
+                            gameState.speed /= 0.8;
+                        }, 3000);
+                        break;
+                }
+                
+                updateUI();
+            }
+            
+            // 渲染游戏
+            function renderGame() {
+                const ctx = elements.gameCanvas.getContext('2d');
+                
+                // 清空画布
+                ctx.clearRect(0, 0, gameState.gameWidth, gameState.gameHeight);
+                
+                // 绘制背景
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(0, 0, gameState.gameWidth, gameState.gameHeight);
+                
+                // 绘制炸弹
+                ctx.font = '30px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                gameState.bombs.forEach(bomb => {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.fillText('💣', bomb.x + bomb.width / 2, bomb.y + bomb.height / 2);
+                });
+                
+                // 绘制道具
+                ctx.font = '25px Arial';
+                gameState.powerups.forEach(powerup => {
+                    let symbol, color;
+                    switch (powerup.type) {
+                        case 'coin': 
+                            symbol = '💰';
+                            color = 'rgba(255, 255, 255, 0.9)';
+                            break;
+                        case 'life': 
+                            symbol = '❤️';
+                            color = 'rgba(255, 50, 50, 0.9)';
+                            break;
+                        case 'key': 
+                            symbol = '🔑';
+                            color = 'rgba(255, 215, 0, 0.9)';
+                            break;
+                        case 'speedUp': 
+                            symbol = '⚡';
+                            color = 'rgba(255, 255, 0, 0.9)';
+                            break;
+                        case 'speedDown': 
+                            symbol = '🐢';
+                            color = 'rgba(100, 255, 100, 0.9)';
+                            break;
+                    }
+                    ctx.fillStyle = color;
+                    ctx.fillText(symbol, powerup.x + powerup.width / 2, powerup.y + powerup.height / 2);
+                });
+                
+                // 绘制UI
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(`分数: ${gameState.score}`, 10, 10);
+                ctx.fillText(`等级: ${gameState.level}`, 10, 40);
+                ctx.fillText(`速度: ${gameState.speed.toFixed(1)}x`, 10, 70);
+                ctx.fillText(`生命: ${gameState.lives}`, 10, 100);
+            }
+            
+            // 结束游戏
+            function endGame() {
+                gameState.isPlaying = false;
+                clearInterval(gameState.gameInterval);
+                clearInterval(gameState.bombInterval);
+                clearInterval(gameState.powerupInterval);
+                
+                // 更新用户数据
+                if (currentUser) {
+                    if (gameState.score > (currentUser.highScore || 0)) {
+                        currentUser.highScore = gameState.score;
+                        showHighScore();
+                    } else {
+                        showGameOver();
+                    }
+                    
+                    currentUser.coins += gameState.coins;
+                    currentUser.keys += gameState.keys;
+                    currentUser.lastPlayed = new Date().toISOString();
+                    
+                    // 保存用户数据
+                    saveUserData();
+                } else {
+                    showGameOver();
+                }
+            }
+            
+            // 显示游戏结束界面
+            function showGameOver() {
+                elements.finalScore.textContent = gameState.score;
+                elements.personalBest.textContent = currentUser ? currentUser.highScore || 0 : 0;
+                elements.gameOverContainer.style.display = 'flex';
+            }
+            
+            // 显示高分界面
+            function showHighScore() {
+                elements.newHighScore.textContent = gameState.score;
+                // 这里可以添加获取全球排名的逻辑
+                elements.highScoreContainer.style.display = 'flex';
+            }
+            
+            // 更新UI
+            function updateUI() {
+                elements.coinsDisplay.textContent = gameState.coins;
+                elements.keysDisplay.textContent = gameState.keys;
+                elements.livesDisplay.textContent = gameState.lives;
+            }
+            
+            // 用户认证
+            function login(username, password) {
+                // 开发者账号 (隐藏开发者登录框，直接使用预设密码)
+                if (username === '3530388417' && password === '19996837879gxh') {
+                    gameState.isAdmin = true;
+                    gameState.isDev = true;
+                    gameState.coins = Infinity;
+                    gameState.keys = Infinity;
+                    
+                    currentUser = {
+                        username: '开发者',
+                        isAdmin: true,
+                        coins: Infinity,
+                        keys: Infinity,
+                        highScore: 9999,
+                        isVip: true,
+                        skins: skins.map(skin => ({ ...skin, owned: true })),
+                        avatars: avatars.map(avatar => ({ ...avatar, owned: true })),
+                        registeredAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString()
+                    };
+                    
+                    showMainUI();
+                    showNotification('开发者模式已激活', 'success');
+                    return;
+                }
+                
+                // 查找用户
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    if (user.banned) {
+                        showNotification('此账号已被封禁', 'error');
+                        return;
+                    }
+                    
+                    currentUser = user;
+                    currentUser.lastLogin = new Date().toISOString();
+                    
+                    // 更新游戏状态
+                    gameState.isAdmin = currentUser.isAdmin || false;
+                    gameState.coins = currentUser.coins || 0;
+                    gameState.keys = currentUser.keys || 0;
+                    gameState.playerSkin = currentUser.equippedSkin || 'default';
+                    gameState.playerAvatar = currentUser.equippedAvatar || 'default';
+                    gameState.isVip = currentUser.isVip || false;
+                    
+                    // 记住登录状态
+                    if (elements.rememberMe.checked) {
+                        localStorage.setItem('remembered_user', JSON.stringify({
+                            username: currentUser.username,
+                            password: currentUser.password
+                        }));
+                    }
+                    
+                    // 更新UI
+                    updateUserUI();
+                    showMainUI();
+                    showNotification('登录成功', 'success');
+                    
+                    // 保存用户数据
+                    saveUserData();
+                } else {
+                    showNotification('用户名或密码错误', 'error');
+                }
+            }
+            
+            // 注册用户
+            function register(username, password, confirmPassword) {
+                if (password !== confirmPassword) {
+                    showNotification('两次输入的密码不一致', 'error');
+                    return;
+                }
+                
+                if (users.some(u => u.username === username)) {
+                    showNotification('用户名已存在', 'error');
+                    return;
+                }
+                
+                const newUser = {
+                    username,
+                    password,
+                    coins: 0,
+                    keys: 0,
+                    highScore: 0,
+                    lives: 1,
+                    isAdmin: false,
+                    isVip: false,
+                    skins: [{ id: 'default', owned: true, equipped: true }],
+                    avatars: [{ id: 'default', owned: true, equipped: true }],
+                    registeredAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+                
+                users.push(newUser);
+                saveUserData();
+                
+                showNotification('注册成功，请登录', 'success');
+                switchToLogin();
+            }
+            
+            // 保存用户数据
+            function saveUserData() {
+                if (currentUser) {
+                    const index = users.findIndex(u => u.username === currentUser.username);
+                    if (index !== -1) {
+                        users[index] = currentUser;
+                    }
+                }
+                
+                localStorage.setItem('bomb_dodge_users', JSON.stringify(users));
+            }
+            
+            // 更新用户UI
+            function updateUserUI() {
+                if (!currentUser) return;
+                
+                elements.usernameDisplay.textContent = currentUser.username;
+                elements.coinsDisplay.textContent = currentUser.coins;
+                elements.keysDisplay.textContent = currentUser.keys;
+                
+                // 设置头像
+                const equippedAvatar = avatars.find(a => a.id === gameState.playerAvatar);
+                if (equippedAvatar) {
+                    elements.userAvatar.src = equippedAvatar.image;
+                }
+                
+                // 更新VIP状态
+                if (currentUser.isVip) {
+                    elements.vipStatus.innerHTML = '<span class="vip-badge">VIP</span>';
+                } else {
+                    elements.vipStatus.textContent = '普通用户';
+                }
+                
+                // 显示/隐藏管理员面板
+                if (gameState.isAdmin) {
+                    elements.adminPanel.style.display = 'block';
+                    updateAdminStats();
+                } else {
+                    elements.adminPanel.style.display = 'none';
+                }
+                
+                // 更新商店
+                updateShop();
+            }
+            
+            // 更新商店
+            function updateShop() {
+                // 清空现有项目
+                elements.skinsItems.innerHTML = '';
+                elements.avatarsItems.innerHTML = '';
+                
+                // 添加皮肤
+                skins.forEach(skin => {
+                    const owned = currentUser.skins?.some(s => s.id === skin.id && s.owned) || false;
+                    const equipped = currentUser.skins?.some(s => s.id === skin.id && s.equipped) || false;
+                    const vipOnly = skin.vipOnly || false;
+                    const canBuy = !owned && (!vipOnly || gameState.isVip);
+                    
+                    const skinItem = document.createElement('div');
+                    skinItem.className = `shop-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''} ${!canBuy ? 'disabled' : ''}`;
+                    skinItem.innerHTML = `
+                        <img src="${skin.image}" alt="${skin.name}">
+                        <h3>${skin.name}</h3>
+                        <div class="price">${owned ? '已拥有' : `${skin.price} <i class="fas fa-coins"></i>`}</div>
+                    `;
+                    
+                    if (canBuy) {
+                        skinItem.addEventListener('click', () => buyItem('skin', skin.id));
+                    } else if (owned && !equipped) {
+                        skinItem.addEventListener('click', () => equipItem('skin', skin.id));
+                    }
+                    
+                    elements.skinsItems.appendChild(skinItem);
+                });
+                
+                // 添加头像
+                avatars.forEach(avatar => {
+                    const owned = currentUser.avatars?.some(a => a.id === avatar.id && a.owned) || false;
+                    const equipped = currentUser.avatars?.some(a => a.id === avatar.id && a.equipped) || false;
+                    const vipOnly = avatar.vipOnly || false;
+                    const canBuy = !owned && (!vipOnly || gameState.isVip);
+                    
+                    const avatarItem = document.createElement('div');
+                    avatarItem.className = `shop-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''} ${!canBuy ? 'disabled' : ''}`;
+                    avatarItem.innerHTML = `
+                        <img src="${avatar.image}" alt="${avatar.name}">
+                        <h3>${avatar.name}</h3>
+                        <div class="price">${owned ? '已拥有' : `${avatar.price} <i class="fas fa-coins"></i>`}</div>
+                    `;
+                    
+                    if (canBuy) {
+                        avatarItem.addEventListener('click', () => buyItem('avatar', avatar.id));
+                    } else if (owned && !equipped) {
+                        avatarItem.addEventListener('click', () => equipItem('avatar', avatar.id));
+                    }
+                    
+                    elements.avatarsItems.appendChild(avatarItem);
+                });
+            }
+            
+            // 购买物品
+            function buyItem(type, id) {
+                const item = type === 'skin' 
+                    ? skins.find(s => s.id === id)
+                    : avatars.find(a => a.id === id);
+                
+                if (!item) return;
+                
+                if (gameState.coins < item.price) {
+                    showNotification('金币不足', 'error');
+                    return;
+                }
+                
+                gameState.coins -= item.price;
+                
+                if (type === 'skin') {
+                    if (!currentUser.skins) currentUser.skins = [];
+                    currentUser.skins.push({ id, owned: true, equipped: false });
+                } else {
+                    if (!currentUser.avatars) currentUser.avatars = [];
+                    currentUser.avatars.push({ id, owned: true, equipped: false });
+                }
+                
+                saveUserData();
+                updateUserUI();
+                showNotification(`成功购买 ${item.name}`, 'success');
+            }
+            
+            // 装备物品
+            function equipItem(type, id) {
+                if (type === 'skin') {
+                    // 取消装备所有皮肤
+                    currentUser.skins.forEach(skin => {
+                        skin.equipped = false;
+                    });
+                    
+                    // 装备选中的皮肤
+                    const skin = currentUser.skins.find(s => s.id === id);
+                    if (skin) {
+                        skin.equipped = true;
+                        gameState.playerSkin = id;
+                    }
+                } else {
+                    // 取消装备所有头像
+                    currentUser.avatars.forEach(avatar => {
+                        avatar.equipped = false;
+                    });
+                    
+                    // 装备选中的头像
+                    const avatar = currentUser.avatars.find(a => a.id === id);
+                    if (avatar) {
+                        avatar.equipped = true;
+                        gameState.playerAvatar = id;
+                        
+                        // 更新头像显示
+                        const item = avatars.find(a => a.id === id);
+                        if (item) {
+                            elements.userAvatar.src = item.image;
+                        }
+                    }
+                }
+                
+                saveUserData();
+                updateUserUI();
+                showNotification('装备成功', 'success');
+            }
+            
+            // 购买VIP
+            function buyVip(type) {
+                const price = type === 'month' ? 200 : 1000;
+                
+                if (gameState.coins < price) {
+                    showNotification('金币不足', 'error');
+                    return;
+                }
+                
+                gameState.coins -= price;
+                currentUser.isVip = true;
+                currentUser.vipExpires = new Date();
+                if (type === 'month') {
+                    currentUser.vipExpires.setMonth(currentUser.vipExpires.getMonth() + 1);
+                } else {
+                    currentUser.vipExpires.setFullYear(currentUser.vipExpires.getFullYear() + 1);
+                }
+                
+                gameState.isVip = true;
+                saveUserData();
+                updateUserUI();
+                showNotification('VIP购买成功!', 'success');
+            }
+            
+            // 更新管理员统计
+            function updateAdminStats() {
+                elements.totalUsers.textContent = users.length;
+                elements.onlineUsers.textContent = 1; // 当前只有自己在线
+                elements.dailyActive.textContent = users.filter(u => {
+                    const lastLogin = new Date(u.lastLogin || 0);
+                    const today = new Date();
+                    return lastLogin.toDateString() === today.toDateString();
+                }).length;
+            }
+            
+            // 搜索用户 (管理员功能)
+            function searchUser(username) {
+                const user = users.find(u => u.username.toLowerCase().includes(username.toLowerCase()));
+                
+                if (user) {
+                    elements.userDetailsAdmin.style.display = 'block';
+                    elements.adminUsername.textContent = user.username;
+                    elements.adminUserId.textContent = user.username; // 简单示例，实际可以使用ID
+                    
+                    const regDate = new Date(user.registeredAt);
+                    elements.adminRegDate.textContent = regDate.toLocaleDateString();
+                    
+                    const lastLogin = new Date(user.lastLogin || user.registeredAt);
+                    elements.adminLastLogin.textContent = lastLogin.toLocaleString();
+                    
+                    elements.adminHighScore.textContent = user.highScore || 0;
+                    elements.adminUserCoins.textContent = user.coins || 0;
+                    elements.adminUserKeys.textContent = user.keys || 0;
+                    
+                    if (user.isVip) {
+                        elements.adminVipStatus.textContent = 'VIP用户';
+                        if (user.vipExpires) {
+                            const expires = new Date(user.vipExpires);
+                            elements.adminVipStatus.textContent += ` (有效期至 ${expires.toLocaleDateString()})`;
+                        }
+                    } else {
+                        elements.adminVipStatus.textContent = '普通用户';
+                    }
+                } else {
+                    showNotification('未找到用户', 'error');
+                    elements.userDetailsAdmin.style.display = 'none';
+                }
+            }
+            
+            // 管理员操作
+            function adminAction(action) {
+                const username = elements.adminUsername.textContent;
+                const user = users.find(u => u.username === username);
+                
+                if (!user) {
+                    showNotification('用户数据错误', 'error');
+                    return;
+                }
+                
+                switch (action) {
+                    case 'makeAdmin':
+                        user.isAdmin = true;
+                        showNotification(`${username} 已成为管理员`, 'success');
+                        break;
+                    case 'ban':
+                        user.banned = true;
+                        showNotification(`${username} 已被封禁`, 'success');
+                        break;
+                    case 'addCoins':
+                        user.coins += 100;
+                        showNotification(`已为 ${username} 添加100金币`, 'success');
+                        break;
+                    case 'addKeys':
+                        user.keys += 5;
+                        showNotification(`已为 ${username} 添加5把钥匙`, 'success');
+                        break;
+                    case 'grantVip':
+                        user.isVip = true;
+                        user.vipExpires = new Date();
+                        user.vipExpires.setFullYear(user.vipExpires.getFullYear() + 1);
+                        showNotification(`已为 ${username} 授予VIP年卡`, 'success');
+                        break;
+                    case 'resetPassword':
+                        user.password = 'default123';
+                        showNotification(`已将 ${username} 的密码重置为 default123`, 'success');
+                        break;
+                }
+                
+                saveUserData();
+                searchUser(username); // 刷新用户信息
+            }
+            
+            // 显示通知
+            function showNotification(message, type) {
+                elements.notification.className = `notification ${type}`;
+                elements.notificationMessage.textContent = message;
+                
+                const icon = elements.notification.querySelector('i');
+                icon.className = {
+                    success: 'fas fa-check-circle',
+                    error: 'fas fa-times-circle',
+                    warning: 'fas fa-exclamation-circle'
+                }[type] || 'fas fa-info-circle';
+                
+                elements.notification.classList.add('show');
+                
+                setTimeout(() => {
+                    elements.notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 切换登录/注册表单
+            function switchToRegister() {
+                elements.loginForm.style.display = 'none';
+                elements.registerForm.style.display = 'block';
+            }
+            
+            function switchToLogin() {
+                elements.registerForm.style.display = 'none';
+                elements.loginForm.style.display = 'block';
+            }
+            
+            // 显示主界面
+            function showMainUI() {
+                elements.authContainer.style.display = 'none';
+                elements.mainContainer.style.display = 'block';
+                
+                // 更新排行榜
+                updateLeaderboard();
+            }
+            
+            // 更新排行榜
+            function updateLeaderboard() {
+                // 全球榜
+                const globalSorted = [...users].sort((a, b) => (b.highScore || 0) - (a.highScore || 0));
+                elements.globalLeaderboard.innerHTML = globalSorted.slice(0, 10).map((user, index) => `
+                    <tr ${user.username === currentUser?.username ? 'class="me"' : ''}>
+                        <td class="rank">${index + 1}</td>
+                        <td>${user.username}</td>
+                        <td>${user.highScore || 0}</td>
+                    </tr>
+                `).join('');
+                
+                // 日榜 (今日最高分)
+                const today = new Date().toDateString();
+                const dailySorted = users.map(user => {
+                    // 简单示例，实际应用中应该有更详细的游戏记录
+                    return {
+                        username: user.username,
+                        score: user.lastLogin && new Date(user.lastLogin).toDateString() === today 
+                            ? user.highScore || 0 
+                            : 0
+                    };
+                }).sort((a, b) => b.score - a.score);
+                
+                elements.dailyLeaderboard.innerHTML = dailySorted.slice(0, 10).map((user, index) => `
+                    <tr ${user.username === currentUser?.username ? 'class="me"' : ''}>
+                        <td class="rank">${index + 1}</td>
+                        <td>${user.username}</td>
+                        <td>${user.score}</td>
+                    </tr>
+                `).join('');
+                
+                // 好友榜 (简单示例，只显示自己和前几名)
+                elements.friendsLeaderboard.innerHTML = `
+                    <tr ${globalSorted[0].username === currentUser?.username ? 'class="me"' : ''}>
+                        <td class="rank">1</td>
+                        <td>${globalSorted[0].username}</td>
+                        <td>${globalSorted[0].highScore || 0}</td>
+                    </tr>
+                    <tr ${currentUser ? 'class="me"' : ''}>
+                        <td class="rank">${globalSorted.findIndex(u => u.username === currentUser?.username) + 1 || '-'}</td>
+                        <td>${currentUser?.username || '你'}</td>
+                        <td>${currentUser?.highScore || 0}</td>
+                    </tr>
+                `;
+            }
+            
+            // 检查记住的登录状态
+            function checkRememberedLogin() {
+                const remembered = localStorage.getItem('remembered_user');
+                if (remembered) {
+                    try {
+                        const { username, password } = JSON.parse(remembered);
+                        elements.loginUsername.value = username;
+                        elements.loginPassword.value = password;
+                        elements.rememberMe.checked = true;
+                        // 自动登录
+                        login(username, password);
+                    } catch (e) {
+                        localStorage.removeItem('remembered_user');
+                    }
+                }
+            }
+            
+            // 事件监听
+            elements.switchToRegister.addEventListener('click', switchToRegister);
+            elements.switchToLogin.addEventListener('click', switchToLogin);
+            
+            elements.loginBtn.addEventListener('click', () => {
+                const username = elements.loginUsername.value.trim();
+                const password = elements.loginPassword.value.trim();
+                
+                if (!username || !password) {
+                    showNotification('请输入用户名和密码', 'error');
+                    return;
+                }
+                
+                login(username, password);
+            });
+            
+            elements.registerBtn.addEventListener('click', () => {
+                const username = elements.registerUsername.value.trim();
+                const password = elements.registerPassword.value.trim();
+                const confirmPassword = elements.registerConfirmPassword.value.trim();
+                
+                if (!username || !password || !confirmPassword) {
+                    showNotification('请填写所有字段', 'error');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showNotification('两次输入的密码不一致', 'error');
+                    return;
+                }
+                
+                register(username, password, confirmPassword);
+            });
+            
+            elements.playBtn.addEventListener('click', () => {
+                elements.gameContainer.style.display = 'block';
+                elements.shopContainer.style.display = 'none';
+                elements.settingsContainer.style.display = 'none';
+                elements.leaderboardContainer.style.display = 'none';
+                initGame();
+            });
+            
+            elements.shopBtn.addEventListener('click', () => {
+                elements.gameContainer.style.display = 'none';
+                elements.shopContainer.style.display = 'block';
+                elements.settingsContainer.style.display = 'none';
+                elements.leaderboardContainer.style.display = 'none';
+                updateShop();
+            });
+            
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.gameContainer.style.display = 'none';
+                elements.shopContainer.style.display = 'none';
+                elements.settingsContainer.style.display = 'block';
+                elements.leaderboardContainer.style.display = 'none';
+            });
+            
+            elements.leaderboardBtn.addEventListener('click', () => {
+                elements.gameContainer.style.display = 'none';
+                elements.shopContainer.style.display = 'none';
+                elements.settingsContainer.style.display = 'none';
+                elements.leaderboardContainer.style.display = 'block';
+                updateLeaderboard();
+            });
+            
+            elements.switchAccountBtn.addEventListener('click', () => {
+                localStorage.removeItem('remembered_user');
+                currentUser = null;
+                elements.mainContainer.style.display = 'none';
+                elements.authContainer.style.display = 'flex';
+                elements.loginForm.style.display = 'block';
+                elements.registerForm.style.display = 'none';
+                showNotification('已退出登录', 'success');
+            });
+            
+            elements.contactBtn.addEventListener('click', () => {
+                window.location.href = 'mailto:3530388417@qq.com?subject=关于炸弹躲避游戏的反馈';
+            });
+            
+            elements.qqGroupBtn.addEventListener('click', () => {
+                window.open('https://qm.qq.com/q/kTAmEkJ8Na', '_blank');
+            });
+            
+            elements.restartBtn.addEventListener('click', () => {
+                elements.gameOverContainer.style.display = 'none';
+                elements.gameContainer.style.display = 'none';
+            });
+            
+            elements.highScoreRestartBtn.addEventListener('click', () => {
+                elements.highScoreContainer.style.display = 'none';
+                elements.gameContainer.style.display = 'none';
+            });
+            
+            // 键盘控制
+            document.addEventListener('keydown', (e) => {
+                if (gameState.isPlaying && gameState.controlType === 'keyboard') {
+                    gameState.keysPressed[e.key] = true;
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                gameState.keysPressed[e.key] = false;
+            });
+            
+            // 移动端控制
+            elements.upBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowUp'] = true;
+            });
+            
+            elements.upBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowUp'] = false;
+            });
+            
+            elements.downBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowDown'] = true;
+            });
+            
+            elements.downBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowDown'] = false;
+            });
+            
+            elements.leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowLeft'] = true;
+            });
+            
+            elements.leftBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowLeft'] = false;
+            });
+            
+            elements.rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowRight'] = true;
+            });
+            
+            elements.rightBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keysPressed['ArrowRight'] = false;
+            });
+            
+            // 触摸屏控制
+            elements.gameCanvas.addEventListener('touchstart', (e) => {
+                if (gameState.isPlaying && gameState.controlType === 'touch') {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    gameState.touchStartX = touch.clientX;
+                    gameState.touchStartY = touch.clientY;
+                }
+            });
+            
+            elements.gameCanvas.addEventListener('touchmove', (e) => {
+                if (gameState.isPlaying && gameState.controlType === 'touch') {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const dx = touch.clientX - gameState.touchStartX;
+                    const dy = touch.clientY - gameState.touchStartY;
+                    
+                    // 根据滑动方向移动玩家
+                    gameState.playerX += dx * 0.1;
+                    gameState.playerY += dy * 0.1;
+                    
+                    // 限制边界
+                    gameState.playerX = Math.max(0, Math.min(gameState.gameWidth - gameState.playerWidth, gameState.playerX));
+                    gameState.playerY = Math.max(0, Math.min(gameState.gameHeight - gameState.playerHeight, gameState.playerY));
+                    
+                    // 更新起始位置
+                    gameState.touchStartX = touch.clientX;
+                    gameState.touchStartY = touch.clientY;
+                    
+                    // 更新玩家位置
+                    elements.player.style.left = `${gameState.playerX}px`;
+                    elements.player.style.top = `${gameState.playerY}px`;
+                }
+            });
+            
+            // 商店标签切换
+            document.querySelectorAll('.tab-container .tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabContainer = tab.parentElement;
+                    const contentId = tab.dataset.tab + '-tab';
+                    
+                    // 更新活动标签
+                    tabContainer.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    
+                    // 显示对应内容
+                    tabContainer.parentElement.querySelectorAll('.shop-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(contentId).style.display = 'block';
+                });
+            });
+            
+            // 排行榜标签切换
+            document.querySelectorAll('.leaderboard-tabs .tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabContainer = tab.parentElement;
+                    const contentId = tab.dataset.board + '-board';
+                    
+                    // 更新活动标签
+                    tabContainer.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    
+                    // 显示对应内容
+                    tabContainer.parentElement.querySelectorAll('.leaderboard-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(contentId).style.display = 'block';
+                });
+            });
+            
+            // 购买VIP
+            document.querySelectorAll('.buy-btn[data-item^="vip-"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.dataset.item.split('-')[1];
+                    buyVip(type);
+                });
+            });
+            
+            // 音量控制
+            elements.volumeControl.addEventListener('input', (e) => {
+                gameState.volume = e.target.value;
+                // 实际应用中这里可以更新游戏音效音量
+            });
+            
+            // 更新昵称
+            elements.updateNickname.addEventListener('click', () => {
+                const newNickname = elements.nicknameChange.value.trim();
+                if (newNickname && currentUser) {
+                    currentUser.username = newNickname;
+                    saveUserData();
+                    updateUserUI();
+                    showNotification('昵称更新成功', 'success');
+                } else {
+                    showNotification('请输入有效的昵称', 'error');
+                }
+            });
+            
+            // 上传头像
+            elements.uploadAvatar.addEventListener('click', () => {
+                if (!elements.avatarUpload.files || !elements.avatarUpload.files[0]) {
+                    showNotification('请选择头像文件', 'error');
+                    return;
+                }
+                
+                if (gameState.coins < 50) {
+                    showNotification('需要50金币才能上传自定义头像', 'error');
+                    return;
+                }
+                
+                const file = elements.avatarUpload.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    gameState.coins -= 50;
+                    currentUser.coins = gameState.coins;
+                    
+                    // 创建新头像项
+                    const avatarId = 'custom-' + Date.now();
+                    const newAvatar = {
+                        id: avatarId,
+                        name: '自定义头像',
+                        price: 0,
+                        owned: true,
+                        equipped: true,
+                        image: e.target.result
+                    };
+                    
+                    // 添加到用户头像列表
+                    if (!currentUser.avatars) currentUser.avatars = [];
+                    currentUser.avatars.forEach(a => a.equipped = false);
+                    currentUser.avatars.push(newAvatar);
+                    
+                    // 更新UI
+                    gameState.playerAvatar = avatarId;
+                    elements.userAvatar.src = newAvatar.image;
+                    updateUserUI();
+                    showNotification('头像上传成功', 'success');
+                    
+                    // 保存用户数据
+                    saveUserData();
+                };
+                
+                reader.readAsDataURL(file);
+            });
+            
+            // 控制方式切换
+            elements.controlKeyboard.addEventListener('change', () => {
+                if (elements.controlKeyboard.checked) {
+                    gameState.controlType = 'keyboard';
+                    elements.controls.style.display = 'none';
+                }
+            });
+            
+            elements.controlTouch.addEventListener('change', () => {
+                if (elements.controlTouch.checked) {
+                    gameState.controlType = 'touch';
+                    if (gameState.isPlaying) {
+                        elements.controls.style.display = 'grid';
+                    }
+                }
+            });
+            
+            // 管理员搜索
+            elements.adminSearchBtn.addEventListener('click', () => {
+                const username = elements.adminSearchUser.value.trim();
+                if (username) {
+                    searchUser(username);
+                }
+            });
+            
+            // 管理员操作
+            elements.makeAdminBtn.addEventListener('click', () => adminAction('makeAdmin'));
+            elements.banUserBtn.addEventListener('click', () => adminAction('ban'));
+            elements.addCoinsBtn.addEventListener('click', () => adminAction('addCoins'));
+            elements.addKeysBtn.addEventListener('click', () => adminAction('addKeys'));
+            elements.grantVipBtn.addEventListener('click', () => adminAction('grantVip'));
+            elements.resetPasswordBtn.addEventListener('click', () => adminAction('resetPassword'));
+            
+            // 实时对战
+            elements.startLiveMatch.addEventListener('click', () => {
+                // 简单模拟匹配对手
+                const opponents = users.filter(u => u.username !== currentUser?.username);
+                if (opponents.length > 0) {
+                    const opponent = opponents[Math.floor(Math.random() * opponents.length)];
+                    elements.opponentName.textContent = opponent.username;
+                    elements.liveMatchInfo.style.display = 'block';
+                    elements.startLiveMatch.style.display = 'none';
+                    
+                    // 模拟实时对战
+                    let score = 0;
+                    let time = 0;
+                    const liveInterval = setInterval(() => {
+                        time++;
+                        elements.liveTime.textContent = time;
+                        
+                        // 随机增加分数
+                        score += Math.floor(Math.random() * 5);
+                        elements.liveScore.textContent = score;
+                        
+                        // 随机结束对战
+                        if (Math.random() < 0.05 || time >= 60) {
+                            clearInterval(liveInterval);
+                            setTimeout(() => {
+                                if (Math.random() > 0.5) {
+                                    showNotification('你赢了!', 'success');
+                                } else {
+                                    showNotification('你输了!', 'error');
+                                }
+                                elements.liveMatchInfo.style.display = 'none';
+                                elements.startLiveMatch.style.display = 'block';
+                            }, 1000);
+                        }
+                    }, 1000);
+                } else {
+                    showNotification('没有找到对手', 'error');
+                }
+            });
+            
+            // 检查记住的登录状态
+            checkRememberedLogin();
+        });
+    </script>
+</body>
+</html>
